@@ -1,0 +1,33 @@
+name: Build MaceLevels JAR
+
+on:
+  push:
+    branches: [ "*" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Unzip project
+        run: unzip -o MaceLevels.zip
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+          cache-dependency-path: MaceLevels/pom.xml
+
+      - name: Build with Maven
+        run: mvn -f MaceLevels/pom.xml clean package
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MaceLevels-jar
+          path: MaceLevels/target/*.jar
